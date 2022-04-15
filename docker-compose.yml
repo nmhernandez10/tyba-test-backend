@@ -1,0 +1,54 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    container_name: postgres-db
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+  nestjs:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tusharchy/nest-and-postgres-application:latest
+    environment:
+      - DB_TYPE=${DB_TYPE}
+      - POSTGRES_HOST=${POSTGRES_HOST}      
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - JWT_SECRET=${JWT_SECRET}
+      - APP_EXPIRES=${APP_EXPIRES}
+      - APP_PORT=${APP_PORT}
+      - API_RESTAURANTS_URL=${API_RESTAURANTS_URL}
+      - API_RESTAURANTS_KEY=${API_RESTAURANTS_KEY}
+    ports:
+      - "3000:3000"
+    container_name: nest-app
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    container_name: nest-pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_LISTEN_PORT=${PGADMIN_LISTEN_PORT}
+    ports:
+      - "8080:80"
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - db
+volumes:
+  pgdata:
+  pgadmin-data:

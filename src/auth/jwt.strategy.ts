@@ -2,7 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtPayload } from './jwt-payload.interface';
+import { config } from 'src/config/config';
+import { JwtPayload } from './models/jwt-payload.interface';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -13,15 +14,17 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         private usersRepository: UserRepository,
     ) {
         super({
-            secretOrKey: 'topSecret51',
+            secretOrKey: config.jwtSecret,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         });
     }
 
     async validate(payload: JwtPayload): Promise<User> {
+        // Validate token from header bearer token
         const { username } = payload;
         const user: User = await this.usersRepository.findOne({ username });
 
+        // Validate user on token also exists on database
         if (!user) {
             throw new UnauthorizedException();
         }

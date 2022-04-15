@@ -1,23 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-import { TransactionController } from './transaction/transaction.controller';
-import { TransactionService } from './transaction/transaction.service';
-import { RestaurantController } from './restaurant/restaurant.controller';
-import { RestaurantService } from './restaurant/restaurant.service';
 import { RestaurantModule } from './restaurant/restaurant.module';
 import { TransactionModule } from './transaction/transaction.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { config } from './config/config';
 
 @Module({
-    imports: [AuthModule, RestaurantModule, TransactionModule],
-    controllers: [
-        AppController,
-        AuthController,
-        TransactionController,
-        RestaurantController,
+    imports: [
+        // Configuration of typeorm connection
+        TypeOrmModule.forRoot({
+            type: 'postgres',
+            host: config.databaseHost,
+            port: config.databasePort,
+            username: config.databaseUser,
+            password: config.databasePass,
+            database: config.databaseDb,
+            autoLoadEntities: true,
+            synchronize: true,
+        }),
+        AuthModule,
+        RestaurantModule,
+        TransactionModule,
     ],
-    providers: [AppService, TransactionService, RestaurantService],
 })
 export class AppModule {}
