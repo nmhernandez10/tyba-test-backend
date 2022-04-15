@@ -16,7 +16,7 @@ services:
       dockerfile: ./Dockerfile
     image: tusharchy/nest-and-postgres-application:latest
     environment:
-      - DB_TYPE=${DB_TYPE}
+      - DATABASE_TYPE=${DATABASE_TYPE}
       - POSTGRES_HOST=${POSTGRES_HOST}      
       - POSTGRES_PORT=${POSTGRES_PORT}
       - DATABASE_USER=${DATABASE_USER}
